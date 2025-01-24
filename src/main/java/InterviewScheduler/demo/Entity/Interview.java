@@ -5,7 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
 
-//commit try
+//commit try 2
 @Entity
 @Table(name = "interviews")
 public class Interview {
