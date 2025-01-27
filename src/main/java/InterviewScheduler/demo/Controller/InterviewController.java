@@ -6,7 +6,6 @@ import InterviewScheduler.demo.Entity.Interview;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -22,9 +21,12 @@ public class InterviewController {
     // POST /api/interviews
     @PostMapping
     public Interview saveInterview(@RequestBody Interview interview) {
-
         return interviewService.saveInterview(interview);
     }
 
-
+    // GET /api/interviews
+    @GetMapping
+    public List<Interview> getAllInterviews() {
+        return interviewService.getAllInterviews();
+    }
 }

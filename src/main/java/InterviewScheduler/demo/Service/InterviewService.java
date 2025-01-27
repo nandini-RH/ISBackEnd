@@ -72,6 +72,11 @@ public class InterviewService {
                 .toList();
     }
 
+    public List<Interview> getAllInterviews() {
+        return interviewRepository.findAll();
+    }
+
+
 //    private void sendPanelEmails(Interview interview) {
 //        List<PanelMember> panelMembers = getPanelMembersByTeam(interview.getInterviewPanel());
 //        panelMembers.forEach(member -> {
