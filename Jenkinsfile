@@ -9,18 +9,33 @@ pipeline {
         stage('Build Backend') {
             steps {
                 sh '''
-                # Install dependencies
-                mvn clean install
+                # Build the project and create the WAR file
+                mvn clean package
                 '''
             }
         }
-        stage('Run Backend') {
+        stage('Deploy to Tomcat') {
             steps {
                 sh '''
-                # Start the server (assuming the .jar file is named target/demo-0.0.1-SNAPSHOT.jar)
-                nohup java -jar target/demo-0.0.1-SNAPSHOT.jar > backend.log 2>&1 &
+                # Define variables
+                WAR_FILE=target/demo-0.0.1-SNAPSHOT.war
+                TOMCAT_PATH=/opt/tomcat/webapps
+
+                # Copy the WAR file to the Tomcat webapps directory
+                cp $WAR_FILE $TOMCAT_PATH
+
+                # Restart the Tomcat server
+                systemctl restart tomcat
                 '''
             }
+        }
+    }
+    post {
+        success {
+            echo 'Deployment completed successfully!'
+        }
+        failure {
+            echo 'Deployment failed. Check logs for details.'
         }
     }
 }
