@@ -10,6 +10,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/interviews")
+@CrossOrigin(origins = "http://localhost:4200")
+
 public class InterviewController {
 
     @Autowired
@@ -19,10 +21,11 @@ public class InterviewController {
     private InterviewRepository interviewRepository;
 
     // POST /api/interviews
-    @PostMapping
+    @PostMapping("/sch")
     public Interview saveInterview(@RequestBody Interview interview) {
         return interviewService.saveInterview(interview);
     }
+
 
     // GET /api/interviews
     @GetMapping

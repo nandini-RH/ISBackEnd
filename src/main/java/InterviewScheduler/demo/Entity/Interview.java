@@ -11,13 +11,12 @@ import java.time.LocalDateTime;
 public class Interview {
 
     @Id
-    @GeneratedValue(generator = "custom-id-generator")
-    @GenericGenerator(
-            name = "custom-id-generator",
-            strategy = "InterviewScheduler.demo.util.CustomIdGenerator"
-    )
-    @Column(name = "id", updatable = false, nullable = false)
-    private String id;
+    @GeneratedValue(generator = "custom-sequence-generator")
+    @GenericGenerator(name = "custom-sequence-generator", strategy = "InterviewScheduler.demo.util.CustomIdGenerator")
+
+    private String rh01;
+
+
 
 
     @Column(name = "emp_name", nullable = false)
@@ -63,6 +62,14 @@ public class Interview {
 
     // Getters and Setters
 
+    public String getRh01() {
+        return rh01;
+    }
+
+    public void setRh01(String rh01) {
+        this.rh01 = rh01;
+    }
+
     public String getRecMail() {
         return recMail;
     }
@@ -84,14 +91,6 @@ public class Interview {
 
     public void setLink(String link){
         this.link=link;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getEmpName() {

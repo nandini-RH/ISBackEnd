@@ -4,37 +4,45 @@ import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.IdentifierGenerator;
 
 import java.io.Serializable;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class CustomIdGenerator implements IdentifierGenerator {
 
+    private static final String PREFIX = "RH";
+    private static final Object lock = new Object();
+
     @Override
     public Serializable generate(SharedSessionContractImplementor session, Object object) {
-        String prefix = "RH";
-        final Long[] nextId = {null}; // Use a single-element array to store the value
-
-        // Use session.doWork() to get the next value from id_sequence
-        session.doWork(connection -> {
-            try (PreparedStatement ps = connection.prepareStatement("INSERT INTO id_sequence () VALUES ()", PreparedStatement.RETURN_GENERATED_KEYS)) {
-                ps.executeUpdate();
-                try (ResultSet rs = ps.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        nextId[0] = rs.getLong(1); // Assign the value to the array element
-                    }
+        Connection connection = null;
+        try {
+            // Obtain the connection to the database
+            connection = session.getJdbcConnectionAccess().obtainConnection();
+            // Query to get the maximum ID from the interview table
+            synchronized (lock) {
+                PreparedStatement statement = connection.prepareStatement("SELECT MAX(CAST(SUBSTRING(rh01, 3) AS UNSIGNED)) FROM interviews");
+                ResultSet rs = statement.executeQuery();
+                if (rs.next()) {
+                    int maxId = rs.getInt(1); // Get the maximum ID
+                    // Return the custom ID formatted with a leading zero
+                    return PREFIX + String.format("%02d", maxId + 1);
                 }
-            } catch (Exception e) {
-                throw new RuntimeException("Error generating ID", e);
             }
-        });
-
-        if (nextId[0] == null) {
-            throw new RuntimeException("Failed to generate ID from id_sequence");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                try {
+                    // Release the connection back to the connection pool
+                    session.getJdbcConnectionAccess().releaseConnection(connection);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
-
-        // Format the numeric part with leading zeros (e.g., 01, 02, 03)
-        String formattedId = String.format("%02d", nextId[0]);
-
-        return prefix + formattedId;
+        // If no IDs exist in the table, return the first ID "RH01"
+        return PREFIX + "01";
     }
 }

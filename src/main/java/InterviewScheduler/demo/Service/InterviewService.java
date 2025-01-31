@@ -2,10 +2,8 @@ package InterviewScheduler.demo.Service;
 
 import InterviewScheduler.demo.Entity.Interview;
 import InterviewScheduler.demo.Entity.Logs;
-import InterviewScheduler.demo.Entity.PanelMember;
 import InterviewScheduler.demo.Repository.InterviewRepository;
 import InterviewScheduler.demo.Repository.LogsRepository;
-import InterviewScheduler.demo.Repository.PanelMemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -13,7 +11,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -30,8 +27,6 @@ public class InterviewService {
     @Autowired
     private LogsRepository logsRepository;
 
-    @Autowired
-    private PanelMemberRepository panelMemberRepository;
 
 
     // Save a new interview
@@ -65,35 +60,11 @@ public class InterviewService {
 
     }
 
-    public List<PanelMember> getPanelMembersByTeam(String techTeam) {
-        return panelMemberRepository.findAll()
-                .stream()
-                .filter(member -> member.getTechTeam().equalsIgnoreCase(techTeam))
-                .toList();
-    }
 
     public List<Interview> getAllInterviews() {
         return interviewRepository.findAll();
     }
 
-
-//    private void sendPanelEmails(Interview interview) {
-//        List<PanelMember> panelMembers = getPanelMembersByTeam(interview.getInterviewPanel());
-//        panelMembers.forEach(member -> {
-//            SimpleMailMessage panelMessage = new SimpleMailMessage();
-//            panelMessage.setTo(member.getEmail());
-//            panelMessage.setSubject("Interview Scheduled: " + interview.getCandidateName());
-//            panelMessage.setText("Dear " + member.getName() + ",\n\n" +
-//                    "An interview has been scheduled for " + interview.getCandidateName() + ".\n" +
-//                    "Position: " + interview.getInterviewType() + "\n" +
-//                    "Round: " + interview.getRoundNumber() + "\n" +
-//                    "Time: " + interview.getScheduledDate() + "\n" +
-//                    "Role: " + interview.getRole() + "\n\n" +
-//                    "Thank you,\nRippleHire Team");
-//
-//            mailSender.send(panelMessage);
-//        });
-//    }
 
 
 
